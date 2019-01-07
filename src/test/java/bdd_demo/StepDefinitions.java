@@ -1,56 +1,91 @@
 package bdd_demo;
 
+import cucumber.api.PendingException;
+import cucumber.api.Scenario;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.junit.After;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class StepDefinitions
 {
-    @Given("a calculator I have just turned on")
-    public void aCalculatorIHaveJustTurnedOn() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
+    private Calculator calc;
+
+
+    @Given("a calculator I just turned on")
+    public void a_calculator_I_just_turned_on() {
+        calc = new Calculator();
     }
 
     @When("I add {int} and {int}")
-    public void iAddAnd(Integer int1, Integer int2) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
+    public void adding(int arg1, int arg2) {
+        calc.push(arg1);
+        calc.push(arg2);
+        calc.push("+");
+    }
+
+    @Given("I press (.+)")
+    public void I_press(String what) {
+        calc.push(what);
     }
 
     @Then("the result is {int}")
-    public void theResultIs(Integer int1) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
+    public void the_result_is(double expected) {
+        assertEquals(expected, calc.value());
+    }
+
+    @Before("not @foo")
+    public void before(Scenario scenario) {
+        scenario.write("Runs before scenarios *not* tagged with @foo");
+    }
+
+    @After
+    public void after(Scenario scenario) {
+        // result.write("HELLLLOO");
     }
 
     @Given("the previous entries:")
-    public void thePreviousEntries(io.cucumber.datatable.DataTable dataTable) {
-        // Write code here that turns the phrase above into concrete actions
-        // For automatic transformation, change DataTable to one of
-        // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-        // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-        // Double, Byte, Short, Long, BigInteger or BigDecimal.
-        //
-        // For other transformations you can register a DataTableType.
-        throw new cucumber.api.PendingException();
+    public void thePreviousEntries(List<Entry> entries) {
+        for (Entry entry : entries) {
+            calc.push(entry.first);
+            calc.push(entry.second);
+            calc.push(entry.operation);
+        }
     }
 
-    @When("I press +")
-    public void iPress() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
+    static final class Entry {
+        private Integer first;
+        private Integer second;
+        private String operation;
 
-    @When("I add <a> and <b>")
-    public void iAddAAndB() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
-    }
+        public Integer getFirst() {
+            return first;
+        }
 
-    @Then("the result is <c>")
-    public void theResultIsC() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new cucumber.api.PendingException();
+        public void setFirst(Integer first) {
+            this.first = first;
+        }
+
+        public Integer getSecond() {
+            return second;
+        }
+
+        public void setSecond(Integer second) {
+            this.second = second;
+        }
+
+        public String getOperation() {
+            return operation;
+        }
+
+        public void setOperation(String operation) {
+            this.operation = operation;
+        }
     }
 }
